@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0a0a0a;--white:#ffffff;--off:#f5f4f0;
+  --gold:#c9a96e;--gold-light:#e8d5b0;--gold-dim:rgba(201,169,110,0.12);
+  --gray:#888;--gray-light:#d4d2ca;--border:rgba(255,255,255,0.07);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--black);color:var(--white);direction:rtl;overflow-x:hidden}
+
+nav{position:fixed;top:0;right:0;left:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 3rem;background:rgba(10,10,10,0.94);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,169,110,0.12)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:0.15em;color:var(--white)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:0.8rem;color:var(--gray);text-decoration:none;letter-spacing:0.08em;transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{font-size:0.78rem;font-weight:600;letter-spacing:0.1em;padding:0.55rem 1.4rem;border:1px solid var(--gold);color:var(--gold);text-decoration:none;transition:all .25s;text-transform:uppercase}
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:7rem 3rem 5rem;text-align:center}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 40%, rgba(201,169,110,0.08) 0%, transparent 70%);pointer-events:none}
+.hero-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(255,255,255,0.022) 80px);pointer-events:none}
+.hero-tag{display:inline-block;font-size:0.72rem;letter-spacing:0.25em;color:var(--gold);text-transform:uppercase;margin-bottom:2rem;padding:0.4rem 1.2rem;border:1px solid rgba(201,169,110,0.28);animation:fadeUp .8s ease both}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,7vw,6.5rem);font-weight:900;line-height:1.06;margin-bottom:1.5rem;animation:fadeUp .8s .15s ease both}
+.hero-title span{color:var(--gold)}
+.hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,0.55);max-width:580px;line-height:1.85;margin:0 auto 2.5rem;animation:fadeUp .8s .3s ease both}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .45s ease both}
+.btn-p{padding:.9rem 2.2rem;background:var(--gold);color:var(--black);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .25s;font-family:'Cairo',sans-serif}
+.btn-p:hover{background:var(--gold-light);transform:translateY(-2px)}
+.btn-o{padding:.9rem 2.2rem;border:1px solid rgba(255,255,255,0.25);color:var(--white);font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;transition:all .25s;font-family:'Cairo',sans-serif}
+.btn-o:hover{border-color:var(--gold);color:var(--gold)}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--gray);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;animation:fadeUp .8s .7s ease both}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollPulse 2s infinite}
+
+.stats-bar{background:var(--off);display:flex;justify-content:space-around;padding:2.5rem 3rem;flex-wrap:wrap;gap:1.5rem}
+.stat{text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:700;color:var(--black);line-height:1}
+.stat-num sup{font-size:1.2rem}
+.stat-label{font-size:.72rem;color:#666;letter-spacing:.06em;margin-top:.3rem}
+
+section{padding:6rem 3rem}
+.stag{font-size:.7rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.9rem}
+.stitle{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,3.5vw,3rem);font-weight:900;line-height:1.1;margin-bottom:.9rem}
+.sdiv{width:38px;height:2px;background:var(--gold);margin:.6rem 0 1.4rem}
+.ssub{font-size:.93rem;color:rgba(255,255,255,0.52);line-height:1.9;max-width:520px}
+
+#situation{background:var(--black)}
+.sit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3.5rem}
+.sit-card{padding:2rem;border:1px solid var(--border);position:relative;overflow:hidden}
+.sit-card::before{content:'';position:absolute;top:0;right:0;left:0;height:2px}
+.sit-card.s::before{background:var(--gold)}
+.sit-card.g::before{background:#c0392b}
+.sit-head{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
+.sit-card.s .sit-head{color:var(--gold)}
+.sit-card.g .sit-head{color:#e74c3c}
+.sit-head::after{content:'';flex:1;height:1px;background:currentColor;opacity:.18}
+.sit-list{list-style:none}
+.sit-list li{font-size:.87rem;color:rgba(255,255,255,.72);line-height:1.7;padding:.52rem 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;align-items:flex-start}
+.sit-list li:last-child{border-bottom:none}
+.sit-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:.6rem}
+.sit-card.s .sit-dot{background:var(--gold)}
+.sit-card.g .sit-dot{background:#e74c3c}
+
+#market{background:#0d0d0d}
+.market-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:3rem}
+.mstats{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.mstat{padding:1.8rem;background:var(--gold-dim);border:1px solid rgba(201,169,110,0.14)}
+.mstat-v{font-family:'Playfair Display',serif;font-size:2.3rem;font-weight:700;color:var(--gold)}
+.mstat-s{font-size:.77rem;color:rgba(255,255,255,.48);line-height:1.6;margin-top:.3rem}
+
+#strategy{background:var(--black)}
+.phases{display:grid;grid-template-columns:repeat(3,1fr);margin-top:3.5rem;border:1px solid var(--border)}
+.phase{padding:2.4rem 1.9rem;border-left:1px solid var(--border);position:relative}
+.phase:last-child{border-left:none}
+.ph-accent{position:absolute;top:0;right:0;left:0;height:3px}
+.phase:nth-child(1) .ph-accent{background:rgba(255,255,255,.2)}
+.phase:nth-child(2) .ph-accent{background:var(--gold)}
+.phase:nth-child(3) .ph-accent{background:rgba(201,169,110,.5)}
+.ph-n{font-family:'Playfair Display',serif;font-size:3.8rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;margin-bottom:-.3rem}
+.ph-t{font-size:1rem;font-weight:700;margin-bottom:.25rem}
+.ph-p{font-size:.7rem;color:var(--gold);letter-spacing:.1em;margin-bottom:1.5rem}
+.ph-list{list-style:none}
+.ph-list li{font-size:.82rem;color:rgba(255,255,255,.62);padding:.42rem 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6}
+.ph-list li:last-child{border-bottom:none}
+.ph-kpi{margin-top:1.5rem;padding:1rem;background:var(--gold-dim);border:1px solid rgba(201,169,110,.16);font-size:.82rem;color:var(--gold)}
+.ph-kpi-l{display:block;font-size:.65rem;color:rgba(255,255,255,.38);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.2rem}
+
+#mktargets{background:#0b0b0b}
+.mkt-list{display:grid;grid-template-columns:1fr;gap:1px;background:var(--border);margin-top:3rem}
+.mkt-item{display:grid;grid-template-columns:2.5rem 1fr auto;gap:2rem;align-items:center;padding:1.9rem 2.5rem;background:var(--black);transition:background .2s}
+.mkt-item:hover{background:#111}
+.mkt-rk{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:rgba(255,255,255,.06)}
+.mkt-item:nth-child(1) .mkt-rk{color:rgba(201,169,110,.22)}
+.mkt-item:nth-child(2) .mkt-rk{color:rgba(44,95,138,.3)}
+.mkt-c{font-size:1rem;font-weight:700;margin-bottom:.2rem}
+.mkt-w{font-size:.8rem;color:rgba(255,255,255,.48)}
+.mkt-s{font-size:.77rem;color:var(--gold);margin-top:.35rem}
+.mkt-nums{display:flex;gap:2rem}
+.mkt-n{text-align:center}
+.mkt-nv{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--gold)}
+.mkt-nl{font-size:.66rem;color:var(--gray);letter-spacing:.06em}
+
+#tactics{background:var(--black)}
+.tact-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3.5rem}
+.tact{padding:2.2rem;border:1px solid var(--border);transition:border-color .25s,background .25s}
+.tact:hover{border-color:rgba(201,169,110,.3);background:rgba(201,169,110,.02)}
+.tact-ico{font-size:1.4rem;margin-bottom:1.1rem}
+.tact-tag{display:inline-block;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;padding:.22rem .7rem;border:1px solid rgba(201,169,110,.28);color:var(--gold);margin-bottom:.7rem}
+.tact-t{font-size:1rem;font-weight:700;margin-bottom:.65rem}
+.tact-d{font-size:.84rem;color:rgba(255,255,255,.52);line-height:1.82}
+
+#services{background:#0d0d0d}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:3.5rem}
+.svc{padding:2rem;background:#0d0d0d;border-top:2px solid transparent;transition:border-color .2s,background .2s}
+.svc:hover{border-top-color:var(--gold);background:#111}
+.svc-ico{font-size:1.3rem;color:var(--gold);margin-bottom:.9rem}
+.svc-t{font-size:.92rem;font-weight:700;margin-bottom:.75rem}
+.svc-l{list-style:none}
+.svc-l li{font-size:.77rem;color:rgba(255,255,255,.48);padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6}
+.svc-l li:last-child{border-bottom:none}
+
+#packages{background:var(--black)}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3.5rem}
+.pkg{padding:2.5rem;border:1px solid var(--border);position:relative}
+.pkg.feat{border-color:var(--gold);background:rgba(201,169,110,.025)}
+.pkg-badge{position:absolute;top:-1px;right:2rem;background:var(--gold);color:var(--black);font-size:.63rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:.28rem .9rem}
+.pkg-t{font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.pkg-d{font-size:.77rem;color:var(--gold);letter-spacing:.08em;margin-bottom:1.8rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.pkg-l{list-style:none;margin-bottom:2rem}
+.pkg-l li{font-size:.82rem;color:rgba(255,255,255,.65);padding:.48rem 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:.6rem;align-items:flex-start;line-height:1.5}
+.pkg-l li:last-child{border-bottom:none}
+.chk{color:var(--gold);flex-shrink:0;font-size:.88rem;margin-top:.1rem}
+.pkg-cta{display:block;text-align:center;padding:.85rem;font-size:.77rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:all .25s;font-family:'Cairo',sans-serif}
+.pkg .pkg-cta{border:1px solid rgba(255,255,255,.18);color:var(--white)}
+.pkg .pkg-cta:hover{border-color:var(--gold);color:var(--gold)}
+.pkg.feat .pkg-cta{background:var(--gold);color:var(--black)}
+.pkg.feat .pkg-cta:hover{background:var(--gold-light)}
+
+#closing{background:var(--off);color:var(--black);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:7rem 3rem}
+#closing .stag{color:#8a6f3e}
+#closing .stitle{color:var(--black);font-size:clamp(2.2rem,4.5vw,3.8rem)}
+.cl-sub{font-size:1rem;color:#555;max-width:500px;margin:.6rem auto 3rem;line-height:1.85}
+.steps{display:flex;justify-content:center;max-width:680px;width:100%;margin-bottom:3rem;border:1px solid #ddd}
+.step{flex:1;padding:1.6rem 1rem;text-align:center;border-left:1px solid #ddd}
+.step:last-child{border-left:none}
+.step-n{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#c9a96e;line-height:1}
+.step-t{font-size:.78rem;color:#666;margin-top:.5rem;line-height:1.5}
+.cl-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-dk{padding:1rem 2.5rem;background:var(--black);color:var(--white);font-size:.85rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:all .25s;font-family:'Cairo',sans-serif}
+.btn-dk:hover{background:#222;transform:translateY(-2px)}
+.btn-lt{padding:1rem 2.5rem;border:1px solid #aaa;color:var(--black);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:all .25s;font-family:'Cairo',sans-serif}
+.btn-lt:hover{border-color:var(--black)}
+
+footer{background:var(--black);padding:1.6rem 3rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
+.f-logo{font-family:'Playfair Display',serif;font-size:.95rem;letter-spacing:.15em;color:rgba(255,255,255,.35)}
+.f-note{font-size:.7rem;color:rgba(255,255,255,.22);letter-spacing:.06em}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scrollPulse{0%,100%{opacity:.35;transform:scaleY(.8)}50%{opacity:1;transform:scaleY(1)}}
+.rev{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.rev.in{opacity:1;transform:translateY(0)}
+
+@media(max-width:780px){
+  nav{padding:1rem 1.2rem}
+  .nav-links{display:none}
+  section{padding:4rem 1.2rem}
+  .sit-grid,.market-inner,.tact-grid,.pkg-grid,.svc-grid{grid-template-columns:1fr}
+  .phases{grid-template-columns:1fr}
+  .phase{border-left:none;border-top:1px solid var(--border)}
+  .mkt-item{grid-template-columns:2rem 1fr}
+  .mkt-nums{display:none}
+  .hero-title{font-size:2.6rem}
+  .stats-bar{padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Urban</div>
+  <ul class="nav-links">
+    <li><a href="#situation">الوضع الحالي</a></li>
+    <li><a href="#market">السوق</a></li>
+    <li><a href="#strategy">الاستراتيجية</a></li>
+    <li><a href="#tactics">التكتيكات</a></li>
+    <li><a href="#services">خدماتي</a></li>
+    <li><a href="#packages">الباقات</a></li>
+  </ul>
+  <a href="#closing" class="nav-cta">تواصل معي</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-tag">مقترح التوسع الخليجي · 2025 – 2026</div>
+  <h1 class="hero-title"><span>Urban</span> تستحق<br>الخليج كله</h1>
+  <p class="hero-sub">علامة كويتية أصيلة أمامها فرصة 13.6 مليار دولار في سوق الأزياء الخليجي — ما ينقصها هو الاستراتيجية الصحيحة والتنفيذ الجريء</p>
+  <div class="hero-btns">
+    <a href="#strategy" class="btn-p">شاهد الخطة</a>
+    <a href="#packages" class="btn-o">باقات التعاون</a>
+  </div>
+  <div class="scroll-hint">
+    <span>اسحب للأسفل</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar rev">
+  <div class="stat"><div class="stat-num">$13.6<sup>B</sup></div><div class="stat-label">سوق الأزياء الخليجي 2029</div></div>
+  <div class="stat"><div class="stat-num">10<sup>%</sup></div><div class="stat-label">نمو سنوي منتظم</div></div>
+  <div class="stat"><div class="stat-num">23<sup>%</sup></div><div class="stat-label">نمو أزياء أونلاين 2024</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">سنوات للوصول لـ 30٪ خارج الكويت</div></div>
+</div>
+
+<!-- SITUATION -->
+<section id="situation">
+  <div class="rev">
+    <div class="stag">تشخيص الوضع الحالي</div>
+    <h2 class="stitle">Urban اليوم —<br>قوة تبحث عن منفذ</h2>
+    <div class="sdiv"></div>
+    <p class="ssub">منذ 2022 والعلامة تبني نفسها بثقة — الآن حان وقت القفزة الخليجية</p>
+  </div>
+  <div class="sit-grid rev">
+    <div class="sit-card s">
+      <div class="sit-head">نقاط القوة</div>
+      <ul class="sit-list">
+        <li><div class="sit-dot"></div>علامة كويتية أصيلة — تأسست 2022</li>
+        <li><div class="sit-dot"></div>منصة Shopify احترافية ثنائية اللغة</li>
+        <li><div class="sit-dot"></div>12+ فئة منتجات — رجال، نساء، أطفال، عطور</li>
+        <li><div class="sit-dot"></div>خيار "ادفع لاحقاً" عبر Deema</li>
+        <li><div class="sit-dot"></div>توصيل مجاني عند 30+ دينار</li>
+        <li><div class="sit-dot"></div>هوية بصرية متماسكة ومحترفة</li>
+      </ul>
+    </div>
+    <div class="sit-card g">
+      <div class="sit-head" style="color:#e74c3c">فجوات تحتاج معالجة</div>
+      <ul class="sit-list" style="--dot:#e74c3c">
+        <li><div class="sit-dot" style="background:#e74c3c"></div>غياب كامل عن أسواق الخليج</li>
+        <li><div class="sit-dot" style="background:#e74c3c"></div>لا تطبيق جوال مخصص</li>
+        <li><div class="sit-dot" style="background:#e74c3c"></div>لا برنامج ولاء أو نقاط مكافآت</li>
+        <li><div class="sit-dot" style="background:#e74c3c"></div>ضعف الحضور على Noon و Namshi</li>
+        <li><div class="sit-dot" style="background:#e74c3c"></div>محتوى غير موطَّن للسعودية والإمارات</li>
+        <li><div class="sit-dot" style="background:#e74c3c"></div>لا استراتيجية مؤثرين منظمة</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET -->
+<section id="market">
+  <div class="market-inner">
+    <div class="rev">
+      <div class="stag">فرصة السوق</div>
+      <h2 class="stitle">لماذا الآن؟<br>لماذا الخليج؟</h2>
+      <div class="sdiv"></div>
+      <p class="ssub">الخليج يشهد أعلى نمو في التجارة الإلكترونية للأزياء عالمياً — وUrban لم تصل بعد</p>
+      <br>
+      <p style="font-size:.83rem;color:rgba(255,255,255,.38);line-height:1.85">الجيل Z الخليجي يبحث عن علامات أصيلة تحمل هوية — "Kuwaiti-born brand" ورقة لا تملكها H&amp;M ولا Zara ولا أي منافس</p>
+    </div>
+    <div class="mstats rev">
+      <div class="mstat"><div class="mstat-v">$13.6B</div><div class="mstat-s">سوق أزياء GCC بحلول 2029</div></div>
+      <div class="mstat"><div class="mstat-v">60%</div><div class="mstat-s">شباب دون الـ30 في السعودية</div></div>
+      <div class="mstat"><div class="mstat-v">$102</div><div class="mstat-s">متوسط إنفاق المتسوق الإماراتي</div></div>
+      <div class="mstat"><div class="mstat-v">91%</div><div class="mstat-s">نسبة تغلغل الإنترنت في UAE</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGY -->
+<section id="strategy">
+  <div class="rev">
+    <div class="stag">خارطة الطريق</div>
+    <h2 class="stitle">الاستراتيجية —<br>3 مراحل للسيطرة</h2>
+    <div class="sdiv"></div>
+  </div>
+  <div class="phases rev">
+    <div class="phase">
+      <div class="ph-accent"></div>
+      <div class="ph-n">01</div>
+      <div class="ph-t">الإطلاق الرقمي</div>
+      <div class="ph-p">0 — 6 أشهر</div>
+      <ul class="ph-list">
+        <li>تفعيل شحن SAR + AED من Shopify</li>
+        <li>مؤثرون سعوديون micro (50k–500k)</li>
+        <li>TikTok Shop + Instagram KSA</li>
+        <li>اختبار إعلانات بميزانية صغيرة</li>
+        <li>تقرير أداء أسبوعي مفصل</li>
+      </ul>
+      <div class="ph-kpi"><span class="ph-kpi-l">الهدف</span>أول 500 طلب خليجي</div>
+    </div>
+    <div class="phase">
+      <div class="ph-accent"></div>
+      <div class="ph-n">02</div>
+      <div class="ph-t">بناء الحضور</div>
+      <div class="ph-p">6 — 18 شهر</div>
+      <ul class="ph-list">
+        <li>إطلاق تطبيق جوال iOS + Android</li>
+        <li>الدخول على Noon و Namshi</li>
+        <li>مستودع لوجستي في السعودية</li>
+        <li>كولكشنات العيد واليوم الوطني</li>
+        <li>برنامج ولاء ونقاط مكافآت</li>
+      </ul>
+      <div class="ph-kpi"><span class="ph-kpi-l">الهدف</span>10٪ من المبيعات خارج الكويت</div>
+    </div>
+    <div class="phase">
+      <div class="ph-accent"></div>
+      <div class="ph-n">03</div>
+      <div class="ph-t">توسع فيزيائي</div>
+      <div class="ph-p">18 — 36 شهر</div>
+      <ul class="ph-list">
+        <li>Pop-up في Avenues Riyadh</li>
+        <li>متجر ثابت في City Walk دبي</li>
+        <li>شراكة فرانشايز / موزع محلي</li>
+        <li>التوسع لقطر والبحرين</li>
+        <li>تقارير OKRs ربعية</li>
+      </ul>
+      <div class="ph-kpi"><span class="ph-kpi-l">الهدف</span>30٪ من المبيعات خارج الكويت</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKETS -->
+<section id="mktargets">
+  <div class="rev">
+    <div class="stag">الأسواق المستهدفة</div>
+    <h2 class="stitle">أولويات الدخول</h2>
+    <div class="sdiv"></div>
+  </div>
+  <div class="mkt-list rev">
+    <div class="mkt-item">
+      <div class="mkt-rk">01</div>
+      <div>
+        <div class="mkt-c">🇸🇦 المملكة العربية السعودية</div>
+        <div class="mkt-w">أكبر سوق خليجي — شباب 60٪ — نمو أونلاين 9٪</div>
+        <div class="mkt-s">→ مؤثرون + TikTok Shop + Noon → متجر في الرياض</div>
+      </div>
+      <div class="mkt-nums">
+        <div class="mkt-n"><div class="mkt-nv">$52</div><div class="mkt-nl">AOV</div></div>
+        <div class="mkt-n"><div class="mkt-nv">88٪</div><div class="mkt-nl">إنترنت</div></div>
+      </div>
+    </div>
+    <div class="mkt-item">
+      <div class="mkt-rk">02</div>
+      <div>
+        <div class="mkt-c">🇦🇪 الإمارات العربية المتحدة</div>
+        <div class="mkt-w">أعلى متوسط إنفاق — $102 AOV — قاعدة دولية واسعة</div>
+        <div class="mkt-s">→ Namshi + Instagram → Pop-up في City Walk دبي</div>
+      </div>
+      <div class="mkt-nums">
+        <div class="mkt-n"><div class="mkt-nv">$102</div><div class="mkt-nl">AOV</div></div>
+        <div class="mkt-n"><div class="mkt-nv">91٪</div><div class="mkt-nl">إنترنت</div></div>
+      </div>
+    </div>
+    <div class="mkt-item">
+      <div class="mkt-rk">03</div>
+      <div>
+        <div class="mkt-c">🇶🇦 قطر · 🇧🇭 البحرين · 🇴🇲 عُمان</div>
+        <div class="mkt-w">أسواق أصغر — منافسة أخف — سهولة الدخول الرقمي</div>
+        <div class="mkt-s">→ شحن من الموقع + شراكات محلية مستقبلاً</div>
+      </div>
+      <div class="mkt-nums">
+        <div class="mkt-n"><div class="mkt-nv">$45</div><div class="mkt-nl">AOV</div></div>
+        <div class="mkt-n"><div class="mkt-nv">78٪</div><div class="mkt-nl">إنترنت</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TACTICS -->
+<section id="tactics">
+  <div class="rev">
+    <div class="stag">التكتيكات</div>
+    <h2 class="stitle">أسلحة النجاح</h2>
+    <div class="sdiv"></div>
+  </div>
+  <div class="tact-grid">
+    <div class="tact rev">
+      <div class="tact-ico">📱</div>
+      <div class="tact-tag">أعلى ROI</div>
+      <div class="tact-t">Social Commerce أولاً</div>
+      <div class="tact-d">TikTok Shop + Instagram Checkout — الجيل Z يشتري مباشرة من الفيديو. محتوى Arabic-first مصمم للسوق السعودي وليس مجرد ترجمة للمحتوى الكويتي.</div>
+    </div>
+    <div class="tact rev">
+      <div class="tact-ico">🛍️</div>
+      <div class="tact-tag">وصول فوري</div>
+      <div class="tact-t">Noon + Namshi</div>
+      <div class="tact-d">البيع على منصات موثوقة يمنح Urban وصولاً فورياً لملايين المتسوقين بدون الحاجة لبناء ثقة من الصفر — الثقة موجودة مسبقاً في المنصة.</div>
+    </div>
+    <div class="tact rev">
+      <div class="tact-ico">🗺️</div>
+      <div class="tact-tag">تمييز حقيقي</div>
+      <div class="tact-t">التوطين الكامل</div>
+      <div class="tact-d">SAR + AED، STC Pay، كولكشنات العيد واليوم الوطني، مقاسات تناسب الجسم الخليجي. توطين المنتج والتجربة كاملاً وليس فقط الموقع.</div>
+    </div>
+    <div class="tact rev">
+      <div class="tact-ico">🇰🇼</div>
+      <div class="tact-tag">لا يقدر عليها أحد</div>
+      <div class="tact-t">الهوية الكويتية كسلاح</div>
+      <div class="tact-d">"Kuwait-born brand" — تمييز حقيقي لا تملكه H&amp;M ولا Zara. الخليجيون يفتخرون بدعم المنتج الخليجي الأصيل وهذه ورقة رابحة لـ Urban.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="rev">
+    <div class="stag">دوري في الشراكة</div>
+    <h2 class="stitle">ما الذي أقدمه<br>لـ Urban</h2>
+    <div class="sdiv"></div>
+  </div>
+  <div class="svc-grid rev">
+    <div class="svc">
+      <div class="svc-ico">📊</div>
+      <div class="svc-t">الاستراتيجية والتخطيط</div>
+      <ul class="svc-l">
+        <li>خطة توسع مفصلة لكل سوق</li>
+        <li>تحليل المنافسين وتحديد الفرص</li>
+        <li>أهداف KPIs قابلة للقياس</li>
+      </ul>
+    </div>
+    <div class="svc">
+      <div class="svc-ico">🌐</div>
+      <div class="svc-t">التوسع الرقمي</div>
+      <ul class="svc-l">
+        <li>إعداد Shopify للشحن الخليجي</li>
+        <li>الدخول على Noon و Namshi</li>
+        <li>إعداد SAR + AED وطرق الدفع</li>
+      </ul>
+    </div>
+    <div class="svc">
+      <div class="svc-ico">📱</div>
+      <div class="svc-t">التسويق والمحتوى</div>
+      <ul class="svc-l">
+        <li>استراتيجية مؤثرين مفصلة</li>
+        <li>خطة محتوى موطَّن للخليج</li>
+        <li>إدارة TikTok و Instagram</li>
+      </ul>
+    </div>
+    <div class="svc">
+      <div class="svc-ico">📲</div>
+      <div class="svc-t">تطوير المنتج الرقمي</div>
+      <ul class="svc-l">
+        <li>متابعة تطوير التطبيق الجوال</li>
+        <li>برنامج ولاء ونقاط مكافآت</li>
+        <li>تحسين تجربة الشراء الأونلاين</li>
+      </ul>
+    </div>
+    <div class="svc">
+      <div class="svc-ico">🚚</div>
+      <div class="svc-t">اللوجستيات</div>
+      <ul class="svc-l">
+        <li>شراكات Aramex / SMSA</li>
+        <li>حلول التخزين في السعودية</li>
+        <li>سياسة إرجاع واضحة للخليج</li>
+      </ul>
+    </div>
+    <div class="svc">
+      <div class="svc-ico">🤝</div>
+      <div class="svc-t">الشراكات والتوسع</div>
+      <ul class="svc-l">
+        <li>تواصل مع موزعين محليين</li>
+        <li>مفاوضات Franchise إذا لزم</li>
+        <li>شراكات Pop-up في المولات</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES -->
+<section id="packages">
+  <div class="rev">
+    <div class="stag">هيكل التعاون</div>
+    <h2 class="stitle">اختر مستوى<br>الشراكة</h2>
+    <div class="sdiv"></div>
+  </div>
+  <div class="pkg-grid rev">
+    <div class="pkg">
+      <div class="pkg-t">استشارات فقط</div>
+      <div class="pkg-d">شهر واحد</div>
+      <ul class="pkg-l">
+        <li><span class="chk">✦</span>تدقيق شامل للوضع الحالي</li>
+        <li><span class="chk">✦</span>خطة توسع مكتوبة</li>
+        <li><span class="chk">✦</span>تقرير الفرص والأولويات</li>
+        <li><span class="chk">✦</span>جلستا عمل مع الفريق</li>
+      </ul>
+      <a href="#closing" class="pkg-cta">ابدأ بخارطة طريق</a>
+    </div>
+    <div class="pkg feat">
+      <div class="pkg-badge">الأكثر طلباً</div>
+      <div class="pkg-t">تنفيذ جزئي</div>
+      <div class="pkg-d">3 أشهر</div>
+      <ul class="pkg-l">
+        <li><span class="chk">✦</span>كل ما في الاستشارات +</li>
+        <li><span class="chk">✦</span>إطلاق الشحن الخليجي</li>
+        <li><span class="chk">✦</span>تأسيس قنوات التسويق</li>
+        <li><span class="chk">✦</span>أول حملة مؤثرين</li>
+        <li><span class="chk">✦</span>تقارير أداء شهرية</li>
+      </ul>
+      <a href="#closing" class="pkg-cta">ابدأ الآن</a>
+    </div>
+    <div class="pkg">
+      <div class="pkg-t">شراكة كاملة</div>
+      <div class="pkg-d">6 – 12 شهر</div>
+      <ul class="pkg-l">
+        <li><span class="chk">✦</span>كل ما في التنفيذ الجزئي +</li>
+        <li><span class="chk">✦</span>إشراف على التطبيق الجوال</li>
+        <li><span class="chk">✦</span>إدارة Noon و Namshi</li>
+        <li><span class="chk">✦</span>خطة Pop-up للسعودية/UAE</li>
+        <li><span class="chk">✦</span>تقارير أسبوعية + OKRs</li>
+      </ul>
+      <a href="#closing" class="pkg-cta">للتوسع الجاد</a>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section id="closing">
+  <div class="stag">الخطوة التالية</div>
+  <h2 class="stitle">Urban تملك كل المقومات<br>ما ينقصها هو التنفيذ</h2>
+  <p class="cl-sub">جلسة أولى مجانية لمدة 30 دقيقة — نناقش الأولويات ونبني خطة العمل معاً</p>
+  <div class="steps">
+    <div class="step"><div class="step-n">01</div><div class="step-t">جلسة أولى<br>مجانية 30 دقيقة</div></div>
+    <div class="step"><div class="step-n">02</div><div class="step-t">تدقيق أولي<br>خلال 48 ساعة</div></div>
+    <div class="step"><div class="step-n">03</div><div class="step-t">توقيع العقد<br>والبدء فوراً</div></div>
+  </div>
+  <div class="cl-btns">
+    <a href="mailto:" class="btn-dk">تواصل الآن</a>
+    <a href="#strategy" class="btn-lt">راجع الخطة</a>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">Urban × Gulf Expansion</div>
+  <div class="f-note">مقترح سري · urbankw.com · 2025</div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.rev').forEach(el => obs.observe(el));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
