@@ -3,6 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- PWA core -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c9a96e">
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Urban">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -177,6 +187,37 @@ footer{background:var(--black);padding:1.6rem 3rem;display:flex;align-items:cent
   .hero-title{font-size:2.6rem}
   .stats-bar{padding:1.5rem}
 }
+
+/* ===== PWA Install Banner ===== */
+#pwa-banner{position:fixed;bottom:0;left:0;right:0;z-index:9000;background:rgba(10,10,10,0.97);backdrop-filter:blur(18px);border-top:1px solid rgba(201,169,110,0.3);padding:1rem 1.5rem;transform:translateY(110%);transition:transform .4s cubic-bezier(.22,1,.36,1)}
+#pwa-banner.show{transform:translateY(0)}
+.pwa-inner{display:flex;align-items:center;gap:1rem;max-width:640px;margin:0 auto}
+.pwa-ico{font-size:2rem;flex-shrink:0}
+.pwa-txt{flex:1;min-width:0}
+.pwa-txt strong{display:block;font-size:.9rem;font-weight:700;color:#fff;margin-bottom:.15rem}
+.pwa-txt span{font-size:.75rem;color:rgba(255,255,255,.48);line-height:1.5}
+.pwa-install{flex-shrink:0;padding:.6rem 1.4rem;background:#c9a96e;color:#0a0a0a;font-size:.78rem;font-weight:700;letter-spacing:.08em;border:none;cursor:pointer;font-family:'Cairo',sans-serif;transition:background .2s;white-space:nowrap}
+.pwa-install:hover{background:#e8d5b0}
+.pwa-close{flex-shrink:0;width:32px;height:32px;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.pwa-close:hover{border-color:rgba(255,255,255,.4);color:#fff}
+
+/* ===== iOS Instructions Modal ===== */
+#ios-modal{position:fixed;inset:0;z-index:9500;display:none;align-items:flex-end;justify-content:center}
+#ios-modal.open{display:flex}
+.ios-overlay{position:absolute;inset:0;background:rgba(0,0,0,.72)}
+.ios-box{position:relative;width:100%;max-width:520px;background:#111;border:1px solid rgba(201,169,110,.2);border-bottom:none;border-radius:1rem 1rem 0 0;padding:1.8rem 1.5rem 2.5rem;animation:slideUp .3s ease}
+.ios-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem}
+.ios-head strong{font-size:1rem;font-weight:700;color:var(--gold)}
+.ios-head-close{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);width:28px;height:28px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.ios-step{display:flex;align-items:center;gap:1rem;padding:.85rem 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ios-step:last-child{border-bottom:none}
+.ios-num{width:28px;height:28px;border-radius:50%;background:rgba(201,169,110,.12);border:1px solid rgba(201,169,110,.3);color:var(--gold);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ios-desc{flex:1}
+.ios-desc strong{display:block;font-size:.86rem;font-weight:600;color:#fff;margin-bottom:.12rem}
+.ios-desc span{font-size:.73rem;color:rgba(255,255,255,.42)}
+.ios-emoji{font-size:1.4rem;flex-shrink:0}
+.ios-tip{margin-top:1.4rem;padding:.9rem 1rem;background:rgba(201,169,110,.07);border:1px solid rgba(201,169,110,.15);font-size:.75rem;color:rgba(255,255,255,.5);text-align:center;line-height:1.7}
+.ios-tip strong{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -541,6 +582,57 @@ footer{background:var(--black);padding:1.6rem 3rem;display:flex;align-items:cent
   <div class="f-note">مقترح سري · urbankw.com · 2025</div>
 </footer>
 
+<!-- PWA Install Banner (Android + iOS) -->
+<div id="pwa-banner" role="banner" aria-label="تثبيت التطبيق">
+  <div class="pwa-inner">
+    <div class="pwa-ico">📲</div>
+    <div class="pwa-txt">
+      <strong id="pwa-banner-title">ثبّت تطبيق Urban</strong>
+      <span id="pwa-banner-sub">استخدم التطبيق على شاشتك الرئيسية — يعمل بدون إنترنت</span>
+    </div>
+    <button class="pwa-install" id="pwa-install-btn">ثبّت</button>
+    <button class="pwa-close" id="pwa-close-btn" aria-label="إغلاق">✕</button>
+  </div>
+</div>
+
+<!-- iOS Step-by-step Modal -->
+<div id="ios-modal" role="dialog" aria-modal="true" aria-label="كيفية إضافة التطبيق">
+  <div class="ios-overlay" id="ios-overlay"></div>
+  <div class="ios-box">
+    <div class="ios-head">
+      <strong>أضف Urban لشاشتك الرئيسية</strong>
+      <button class="ios-head-close" id="ios-close-btn" aria-label="إغلاق">✕</button>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">1</div>
+      <div class="ios-desc">
+        <strong>اضغط على أيقونة المشاركة</strong>
+        <span>الأيقونة في شريط Safari السفلي (مربع بسهم للأعلى)</span>
+      </div>
+      <div class="ios-emoji">⬆️</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">2</div>
+      <div class="ios-desc">
+        <strong>اختر "إضافة إلى الشاشة الرئيسية"</strong>
+        <span>تجده بالتمرير للأسفل في قائمة المشاركة</span>
+      </div>
+      <div class="ios-emoji">📱</div>
+    </div>
+    <div class="ios-step">
+      <div class="ios-num">3</div>
+      <div class="ios-desc">
+        <strong>اضغط "إضافة" في أعلى الشاشة</strong>
+        <span>وتم! ستجد أيقونة Urban على شاشتك مباشرةً</span>
+      </div>
+      <div class="ios-emoji">✅</div>
+    </div>
+    <div class="ios-tip">
+      يجب فتح الصفحة من <strong>Safari</strong> — المتصفحات الأخرى لا تدعم هذه الميزة على iPhone
+    </div>
+  </div>
+</div>
+
 <script>
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => {
@@ -555,6 +647,95 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
   });
 });
+
+// ===== PWA =====
+(function () {
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+
+  const banner       = document.getElementById('pwa-banner');
+  const installBtn   = document.getElementById('pwa-install-btn');
+  const closeBtn     = document.getElementById('pwa-close-btn');
+  const iosModal     = document.getElementById('ios-modal');
+  const iosOverlay   = document.getElementById('ios-overlay');
+  const iosCloseBtn  = document.getElementById('ios-close-btn');
+  const bannerTitle  = document.getElementById('pwa-banner-title');
+  const bannerSub    = document.getElementById('pwa-banner-sub');
+
+  // Don't show anything if already running as installed PWA
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                    || window.navigator.standalone === true;
+  if (isStandalone) return;
+
+  // Don't re-show if permanently dismissed
+  if (localStorage.getItem('pwa-dismissed')) return;
+
+  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const isSafari  = /safari/i.test(navigator.userAgent) && !/chrome|crios|fxios/i.test(navigator.userAgent);
+
+  let deferredPrompt = null;
+
+  function showBanner() {
+    banner.classList.add('show');
+  }
+
+  function hideBanner() {
+    banner.classList.remove('show');
+  }
+
+  function dismissForever() {
+    localStorage.setItem('pwa-dismissed', '1');
+    hideBanner();
+  }
+
+  closeBtn.addEventListener('click', dismissForever);
+
+  // ── Android: capture beforeinstallprompt ──
+  if (isAndroid || (!isIOS)) {
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(showBanner, 3000);
+    });
+
+    installBtn.addEventListener('click', () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        hideBanner();
+      });
+    });
+
+    window.addEventListener('appinstalled', hideBanner);
+  }
+
+  // ── iOS Safari: show instructions ──
+  if (isIOS && isSafari) {
+    bannerTitle.textContent = 'أضف Urban لشاشتك الرئيسية';
+    bannerSub.textContent   = 'شغّل التطبيق مثل أي تطبيق حقيقي — بدون متصفح';
+    installBtn.textContent  = 'كيفية التثبيت';
+
+    installBtn.addEventListener('click', () => {
+      iosModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeIOS() {
+      iosModal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    iosCloseBtn.addEventListener('click', closeIOS);
+    iosOverlay.addEventListener('click', closeIOS);
+
+    setTimeout(showBanner, 3000);
+  }
+}());
 </script>
 </body>
 </html>
