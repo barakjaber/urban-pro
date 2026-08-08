@@ -188,7 +188,7 @@ td input[type=text]{width:100%;min-width:90px;background:var(--bg-elev2);border:
 /* ===================== Program data (verbatim from the plan — not to be altered) ===================== */
 var PROGRAM = {
   sat:{ key:'sat', abbr:'SAT', nameAr:'السبت', title:'Speed Run + OCR Race Training', category:'speed_ocr',
-    mainGoal:'Running — Speed + Technique و OCR Grip / Race Training',
+    mainGoal:'تطوير السرعة عبر الجري + تقوية القبضة والتحمل لسباقات OCR',
     estimatedDuration:'32 دقيقة للجري (20 دقيقة هرولة + 6×(1 دقيقة نشيط/1 دقيقة هرولة)) — محسوبة من المعلومات المعطاة. مدة OCR غير محددة رقميًا في البرنامج (تعتمد على 3–5 جولات).',
     blocks:[
       { title:'Running — Speed + Technique', items:[
@@ -511,7 +511,7 @@ function dayHTML(dayKey){
     html += '<li class="'+(runChecked?'checked':'')+'"><input type="checkbox" id="ex-running" data-toggle-day="sat" data-toggle-ex="running" '+(runChecked?'checked':'')+'><label for="ex-running">Running — Speed + Technique</label></li>';
     prog.ocr.exercises.forEach(function(ex,i){
       var checked = dd&&dd.checklist&&dd.checklist[ex.id];
-      html += '<li class="'+(checked?'checked':'')+'"><span class="num">'+(i+1)+'</span><input type="checkbox" id="ex-'+ex.id+'" data-toggle-day="sat" data-toggle-ex="'+ex.id+'" '+(checked?'checked':'')+'><label for="ex-'+ex.id+'">'+esc(ex.name)+' — <span style="color:var(--text-faint)">'+esc(ex.target)+'</span></label></li>';
+      html += '<li class="'+(checked?'checked':'')+'"><span class="num">'+(i+1)+'</span><input type="checkbox" id="ex-'+ex.id+'" data-toggle-day="sat" data-toggle-ex="'+ex.id+'" '+(checked?'checked':'')+'><label for="ex-'+ex.id+'"><bdi>'+esc(ex.name)+'</bdi> — <span style="color:var(--text-faint)">'+esc(ex.target)+'</span></label></li>';
     });
     html += '</ul></div>';
 
@@ -521,7 +521,7 @@ function dayHTML(dayKey){
       var checked = dd&&dd.checklist&&dd.checklist[ex.id];
       var actual = (dd&&dd.ocrActual&&dd.ocrActual[ex.id]) || '';
       html += '<tr class="'+(checked?'checked':'')+'">'+
-        '<td class="ex-name">'+esc(ex.name)+'</td>'+
+        '<td class="ex-name"><bdi>'+esc(ex.name)+'</bdi></td>'+
         '<td>'+esc(ex.target)+'</td>'+
         '<td><input type="checkbox" data-toggle-day="sat" data-toggle-ex="'+ex.id+'" '+(checked?'checked':'')+'></td>'+
         '<td><input type="text" placeholder="reps / hold" data-ocr-actual="'+ex.id+'" data-day="sat" value="'+esc(actual)+'"></td>'+
