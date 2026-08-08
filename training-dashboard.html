@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Training Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0b0d;
+  --bg-elev:#131519;
+  --bg-elev2:#1a1d22;
+  --border:#262a31;
+  --text:#f3f4f6;
+  --text-dim:#9aa1ab;
+  --text-faint:#5b6169;
+  --accent:#ff4b2b;
+  --accent-dim:rgba(255,75,43,.13);
+  --accent2:#20d3c2;
+  --accent2-dim:rgba(32,211,194,.13);
+  --gold:#e8b84b;
+  --gold-dim:rgba(232,184,75,.13);
+  --success:#3ddc84;
+  --success-dim:rgba(61,220,132,.13);
+  --danger:#ff5a5a;
+  --danger-dim:rgba(255,90,90,.13);
+  --violet:#9d8cff;
+  --violet-dim:rgba(157,140,255,.13);
+  --radius:16px;
+  --radius-sm:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);direction:rtl;min-height:100vh;line-height:1.6}
+button,input,textarea{font-family:'Cairo',sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:0 1.1rem 5rem}
+
+/* Topbar */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(10,11,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.topbar-inner{max-width:1040px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--gold));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1rem;color:#0a0b0d;flex-shrink:0}
+.brand-text b{display:block;font-size:.95rem;font-weight:800;letter-spacing:.01em}
+.brand-text span{display:block;font-size:.66rem;color:var(--text-faint);letter-spacing:.06em}
+.tabs{display:flex;gap:.3rem;background:var(--bg-elev);border:1px solid var(--border);border-radius:999px;padding:.25rem}
+.tab{border:none;background:transparent;color:var(--text-dim);font-size:.8rem;font-weight:700;padding:.5rem 1rem;border-radius:999px;cursor:pointer;transition:.2s}
+.tab.active{background:var(--accent);color:#fff}
+.tab:not(.active):hover{color:var(--text)}
+
+/* Week switcher */
+.weeksw{display:flex;align-items:center;justify-content:center;gap:.7rem;margin:1.2rem 0 .3rem;flex-wrap:wrap}
+.wk-btn{background:var(--bg-elev);border:1px solid var(--border);color:var(--text);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:.2s}
+.wk-btn:hover{border-color:var(--accent);color:var(--accent)}
+.wk-label{font-size:.8rem;color:var(--text-dim);min-width:190px;text-align:center;font-weight:600}
+.wk-today{font-size:.7rem;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(255,75,43,.3);padding:.4rem .8rem;border-radius:999px;cursor:pointer;font-weight:700}
+.wk-today:hover{background:var(--accent);color:#fff}
+.wk-flag{text-align:center;font-size:.72rem;color:var(--gold);margin-bottom:1rem}
+
+/* Section heading */
+.eyebrow{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:2rem 0 .5rem}
+h1.page-title{font-size:1.5rem;font-weight:900;margin-bottom:.2rem}
+.page-sub{color:var(--text-dim);font-size:.85rem;margin-bottom:1.2rem}
+
+/* Hero (Today) */
+.hero{background:linear-gradient(155deg,var(--bg-elev) 0%,var(--bg-elev2) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;margin-top:1rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset-block-start:0;inset-inline-start:0;width:5px;height:100%;background:var(--accent)}
+.hero.is-rest::before{background:var(--violet)}
+.hero-day{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint);font-weight:800;margin-bottom:.4rem}
+.hero-title{font-size:1.6rem;font-weight:900;margin-bottom:.35rem}
+.hero-goal{color:var(--text-dim);font-size:.88rem;margin-bottom:1rem;max-width:520px}
+.hero-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.hero-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:#fff;border:none;padding:.75rem 1.4rem;border-radius:10px;font-weight:800;font-size:.85rem;cursor:pointer;transition:.2s}
+.hero-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+.chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:700;padding:.32rem .7rem;border-radius:999px;border:1px solid transparent}
+.chip-todo{background:var(--bg-elev2);color:var(--text-dim);border-color:var(--border)}
+.chip-progress{background:var(--accent2-dim);color:var(--accent2);border-color:rgba(32,211,194,.3)}
+.chip-done{background:var(--success-dim);color:var(--success);border-color:rgba(61,220,132,.3)}
+.chip-skip{background:var(--danger-dim);color:var(--danger);border-color:rgba(255,90,90,.3)}
+.chip-rest{background:var(--violet-dim);color:var(--violet);border-color:rgba(157,140,255,.3)}
+.chip-gold{background:var(--gold-dim);color:var(--gold);border-color:rgba(232,184,75,.3)}
+
+/* Weekly grid */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem;margin-top:1rem}
+.dcard{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem .9rem;cursor:pointer;transition:.2s;text-align:right;position:relative}
+.dcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.dcard.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.dcard-abbr{font-size:.68rem;letter-spacing:.15em;color:var(--text-faint);font-weight:800;margin-bottom:.5rem}
+.dcard-title{font-size:.92rem;font-weight:800;margin-bottom:.65rem;min-height:2.4em;line-height:1.3}
+.dcard.rest .dcard-title{color:var(--violet)}
+
+/* Cards / sections */
+.card{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem;margin-top:1rem}
+.card h3{font-size:.95rem;font-weight:800;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem}
+.card .hint{font-size:.75rem;color:var(--text-faint);margin-bottom:.9rem}
+.back-btn{display:inline-flex;align-items:center;gap:.4rem;background:none;border:1px solid var(--border);color:var(--text-dim);padding:.5rem 1rem;border-radius:999px;font-size:.78rem;cursor:pointer;margin-top:1.1rem}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.9rem;margin-top:1rem}
+.ov-tile{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.9rem 1rem}
+.ov-tile .k{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin-bottom:.3rem}
+.ov-tile .v{font-size:1rem;font-weight:800}
+
+.block-title{font-size:.82rem;font-weight:800;color:var(--accent2);margin:1rem 0 .5rem;letter-spacing:.02em}
+.plan-list{list-style:none}
+.plan-list li{font-size:.87rem;color:var(--text);padding:.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:.6rem;align-items:flex-start}
+.plan-list li:last-child{border-bottom:none}
+.plan-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);margin-top:.55rem;flex-shrink:0}
+
+.session-name{font-size:1.3rem;font-weight:900;color:var(--text);margin:.2rem 0}
+
+/* Checklist */
+.checklist{list-style:none;margin-top:.3rem}
+.checklist li{display:flex;align-items:center;gap:.7rem;padding:.65rem .2rem;border-bottom:1px solid var(--border)}
+.checklist li:last-child{border-bottom:none}
+.checklist input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
+.checklist label{font-size:.87rem;cursor:pointer;flex:1}
+.checklist .num{width:22px;height:22px;border-radius:6px;background:var(--bg-elev2);color:var(--text-faint);font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.checklist li.checked label{color:var(--text-faint);text-decoration:line-through}
+
+/* OCR table */
+.table-wrap{overflow-x:auto;margin-top:.6rem;border:1px solid var(--border);border-radius:var(--radius-sm)}
+table{width:100%;border-collapse:collapse;min-width:520px;font-size:.83rem}
+th{background:var(--bg-elev2);color:var(--text-faint);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;text-align:start;padding:.7rem .8rem;font-weight:800}
+td{padding:.65rem .8rem;border-top:1px solid var(--border)}
+tr.checked td{color:var(--text-faint)}
+tr.checked td.ex-name{text-decoration:line-through}
+td input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+td input[type=text]{width:100%;min-width:90px;background:var(--bg-elev2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:.4rem .5rem;font-size:.8rem}
+.struct-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.9rem}
+.struct-pill{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(232,184,75,.3);padding:.5rem .9rem;border-radius:10px;font-size:.76rem;font-weight:700}
+
+/* Segmented status */
+.seg{display:flex;gap:.5rem;margin-top:.4rem;flex-wrap:wrap}
+.seg-btn{flex:1;min-width:130px;padding:.75rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--bg-elev2);color:var(--text-dim);font-weight:800;font-size:.82rem;cursor:pointer;transition:.2s}
+.seg-btn.on-done{background:var(--success-dim);border-color:rgba(61,220,132,.4);color:var(--success)}
+.seg-btn.on-skip{background:var(--danger-dim);border-color:rgba(255,90,90,.4);color:var(--danger)}
+.seg-btn:not(.on-done):not(.on-skip):hover{border-color:var(--text-dim)}
+
+.toggle-row{display:flex;align-items:center;gap:.7rem;margin-top:.5rem;background:var(--bg-elev2);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem}
+.toggle-row input{width:19px;height:19px;accent-color:var(--success);cursor:pointer}
+.toggle-row label{font-size:.85rem;font-weight:700;cursor:pointer}
+
+/* Form */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.9rem;margin-top:1rem}
+.field{display:flex;flex-direction:column;gap:.35rem}
+.field.full{grid-column:1/-1}
+.field label{font-size:.72rem;color:var(--text-faint);font-weight:700;letter-spacing:.04em}
+.field input,.field textarea{background:var(--bg-elev2);border:1px solid var(--border);border-radius:9px;color:var(--text);padding:.65rem .8rem;font-size:.88rem;width:100%}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:80px}
+
+/* Stat tiles */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.9rem;margin-top:1rem}
+.stat-tile{background:var(--bg-elev);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1.1rem}
+.stat-tile .v{font-size:1.7rem;font-weight:900;line-height:1}
+.stat-tile .l{font-size:.72rem;color:var(--text-faint);margin-top:.4rem;font-weight:600}
+.bar{height:8px;background:var(--bg-elev2);border-radius:99px;overflow:hidden;margin-top:.7rem}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:99px;transition:width .3s}
+
+.subhead{font-size:.85rem;font-weight:800;color:var(--text);margin:1.4rem 0 .5rem;display:flex;align-items:center;gap:.5rem}
+.subhead .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2)}
+.empty{color:var(--text-faint);font-size:.82rem;padding:1rem 0;text-align:center}
+
+/* Toast */
+#toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--success);color:#06210f;font-weight:800;font-size:.8rem;padding:.6rem 1.2rem;border-radius:999px;opacity:0;transition:.25s;z-index:200;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:640px){
+  .topbar-inner{padding:.7rem .8rem}
+  .brand-text span{display:none}
+  .tabs{width:100%;justify-content:space-between}
+  .tab{flex:1;text-align:center;padding:.5rem .4rem;font-size:.72rem}
+  .hero{padding:1.2rem}
+  .hero-title{font-size:1.3rem}
+  .card{padding:1rem}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast">تم الحفظ</div>
+<script>
+(function(){
+"use strict";
+
+/* ===================== Program data (verbatim from the plan — not to be altered) ===================== */
+var PROGRAM = {
+  sat:{ key:'sat', abbr:'SAT', nameAr:'السبت', title:'Speed Run + OCR Race Training', category:'speed_ocr',
+    mainGoal:'Running — Speed + Technique و OCR Grip / Race Training',
+    estimatedDuration:'32 دقيقة للجري (20 دقيقة هرولة + 6×(1 دقيقة نشيط/1 دقيقة هرولة)) — محسوبة من المعلومات المعطاة. مدة OCR غير محددة رقميًا في البرنامج (تعتمد على 3–5 جولات).',
+    blocks:[
+      { title:'Running — Speed + Technique', items:[
+        '20 دقيقة هرولة',
+        '1 دقيقة نشيط (Pace متعب لكن تحت السيطرة)',
+        '1 دقيقة هرولة',
+        'تكرار 6 مرات'
+      ]}
+    ],
+    ocr:{
+      title:'OCR Grip / Race Training',
+      note:'نفّذ التمارين التالية بالترتيب',
+      exercises:[
+        {id:'forearm_reverse', name:'Forearm Reverse', target:'10–15 تكرار لكل ذراع'},
+        {id:'ghost', name:'Ghost', target:'45 ثانية – 1 دقيقة'},
+        {id:'fingers_hold', name:'Fingers Hold', target:'45 ثانية – 1 دقيقة'},
+        {id:'hammer_pullup', name:'Hammer Pull-Up', target:'8–12 تكرار'},
+        {id:'one_hand_hammer_pullup', name:'One-Hand Hammer Pull-Up', target:'6–10 تكرارات لكل ذراع'},
+        {id:'one_hand_swing', name:'One-Hand Swing', target:'30 ثانية – 1 دقيقة'},
+        {id:'hand_flip', name:'Hand Flip', target:'30 ثانية – 1 دقيقة'},
+        {id:'monkey_hand', name:'Monkey Hand', target:'45 ثانية – 1 دقيقة'}
+      ],
+      structure:{ rounds:'3–5 Rounds', restBetweenExercises:'45 ثانية', restBetweenRounds:'2 دقيقة' }
+    }
+  },
+  sun:{ key:'sun', abbr:'SUN', nameAr:'الأحد', title:'Spartan Royal', category:'spartan',
+    mainGoal:'حصة Spartan Royal', estimatedDuration:null, sessionName:'Spartan Royal' },
+  mon:{ key:'mon', abbr:'MON', nameAr:'الاثنين', title:'Long Run', category:'long_run',
+    mainGoal:'ركضة طويلة (Long Run)', estimatedDuration:null, sessionName:'Long Run' },
+  tue:{ key:'tue', abbr:'TUE', nameAr:'الثلاثاء', title:'Spartan Cardio', category:'spartan',
+    mainGoal:'حصة Spartan Cardio', estimatedDuration:null, sessionName:'Spartan Cardio' },
+  wed:{ key:'wed', abbr:'WED', nameAr:'الأربعاء', title:'Easy Run + Core', category:'easy_core',
+    mainGoal:'ركضة سهلة 5 KM + Core workout', estimatedDuration:null,
+    blocks:[
+      {title:'Running', items:['ركضة سهلة','5 KM','Pace بطيء ومريح جدًا']},
+      {title:'Core', items:['Core workout']}
+    ]
+  },
+  thu:{ key:'thu', abbr:'THU', nameAr:'الخميس', title:'Spartan HIIT', category:'spartan',
+    mainGoal:'حصة Spartan HIIT', estimatedDuration:null, sessionName:'Spartan HIIT' },
+  fri:{ key:'fri', abbr:'FRI', nameAr:'الجمعة', title:'Rest', category:'rest',
+    mainGoal:'يوم راحة كاملة (Recovery / Rest)', estimatedDuration:null }
+};
+var DAY_ORDER = ['sat','sun','mon','tue','wed','thu','fri'];
+var SAT_CHECKLIST = ['running'].concat(PROGRAM.sat.ocr.exercises.map(function(e){return e.id;}));
+var WED_CHECKLIST = ['running_easy','core'];
+var MON_CHECKLIST = ['long_run'];
+
+var TRACKING = {
+  sat:[
+    {id:'distance', label:'Distance', type:'text', ph:'مثال: 5 كم'},
+    {id:'totalTime', label:'Total Time', type:'text', ph:'مثال: 30:00'},
+    {id:'pace', label:'Pace', type:'text', ph:'دقيقة/كم'},
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'roundsCompleted', label:'OCR Rounds Completed', type:'text', ph:'مثال: 4'},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ],
+  sun:[
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'notes', label:'Notes / ملاحظات بعد التمرين', type:'textarea'}
+  ],
+  mon:[
+    {id:'distance', label:'Distance', type:'text'},
+    {id:'time', label:'Time', type:'text'},
+    {id:'pace', label:'Pace', type:'text'},
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ],
+  tue:[
+    {id:'duration', label:'Duration', type:'text'},
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ],
+  wed:[
+    {id:'fiveKTime', label:'5K Time', type:'text', ph:'مثال: 32:00'},
+    {id:'pace', label:'Pace', type:'text'},
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ],
+  thu:[
+    {id:'duration', label:'Duration', type:'text'},
+    {id:'rpe', label:'RPE (1–10)', type:'number', min:1, max:10},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ],
+  fri:[
+    {id:'recovery', label:'Recovery feeling', type:'text', ph:'مثال: جيد / متوسط / متعب'},
+    {id:'sleep', label:'Sleep', type:'text', ph:'مثال: 7 ساعات'},
+    {id:'notes', label:'Notes', type:'textarea'}
+  ]
+};
+
+/* ===================== Date helpers ===================== */
+var AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function pad2(n){return String(n).padStart(2,'0');}
+function toISODate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function getWeekStart(d){var day=d.getDay();var diff=(day-6+7)%7;return new Date(d.getFullYear(),d.getMonth(),d.getDate()-diff);}
+function fmtDate(d){return d.getDate()+' '+AR_MONTHS[d.getMonth()]+' '+d.getFullYear();}
+function weekRangeLabel(ws){return fmtDate(ws)+'  –  '+fmtDate(addDays(ws,6));}
+function todayDayKey(){var m={6:'sat',0:'sun',1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'};return m[new Date().getDay()];}
+
+/* ===================== Storage ===================== */
+var STORE_KEY='urbanPro_trainingDashboard_v1';
+function loadStore(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY)); return d&&d.weeks?d:{weeks:{}}; }catch(e){ return {weeks:{}}; } }
+function saveStore(){ localStorage.setItem(STORE_KEY, JSON.stringify(store)); }
+var store = loadStore();
+
+function safeGetDay(weekKey,dayKey){ var wk=store.weeks[weekKey]; if(!wk) return null; return wk[dayKey]||null; }
+function getOrCreateDay(weekKey,dayKey){
+  if(!store.weeks[weekKey]) store.weeks[weekKey]={};
+  if(!store.weeks[weekKey][dayKey]) store.weeks[weekKey][dayKey]={checklist:{},fields:{}};
+  return store.weeks[weekKey][dayKey];
+}
+function setField(weekKey,dayKey,field,value){ var d=getOrCreateDay(weekKey,dayKey); d.fields[field]=value; saveStore(); toast(); }
+function toggleChecklist(weekKey,dayKey,exId){ var d=getOrCreateDay(weekKey,dayKey); d.checklist[exId]=!d.checklist[exId]; saveStore(); toast(); }
+function setStatus(weekKey,dayKey,val){ var d=getOrCreateDay(weekKey,dayKey); d.fields.status=val; saveStore(); toast(); }
+function setOcrActual(weekKey,dayKey,exId,val){ var d=getOrCreateDay(weekKey,dayKey); if(!d.ocrActual) d.ocrActual={}; d.ocrActual[exId]=val; saveStore(); toast(); }
+function allWeekKeysSorted(){ return Object.keys(store.weeks).sort().reverse(); }
+
+var toastTimer=null;
+function toast(){
+  var el=document.getElementById('toast'); if(!el) return;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ el.classList.remove('show'); },1200);
+}
+
+/* ===================== Parsing helpers ===================== */
+function parseNumber(str){ if(!str) return NaN; var m=String(str).match(/[\d.]+/); return m?parseFloat(m[0]):NaN; }
+function parseTimeToSeconds(str){
+  if(!str) return NaN;
+  var s=String(str).trim();
+  var m3=s.match(/^(\d+):([0-5]?\d):([0-5]?\d)$/);
+  if(m3) return (+m3[1])*3600+(+m3[2])*60+(+m3[3]);
+  var m2=s.match(/^(\d+):([0-5]?\d)$/);
+  if(m2) return (+m2[1])*60+(+m2[2]);
+  var m1=s.match(/^\d+(\.\d+)?$/);
+  if(m1) return parseFloat(s)*60;
+  return NaN;
+}
+function secondsToClock(sec){
+  sec=Math.round(sec);
+  var h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
+  return h>0? (h+':'+pad2(m)+':'+pad2(s)) : (m+':'+pad2(s));
+}
+
+/* ===================== Status logic ===================== */
+function dayStatus(weekKey,dayKey){
+  var dd=safeGetDay(weekKey,dayKey);
+  if(dayKey==='fri'){
+    var hasData = dd && dd.fields && (dd.fields.recovery||dd.fields.sleep||dd.fields.notes);
+    return hasData ? {state:'rest',text:'راحة • مُسجّل'} : {state:'rest',text:'يوم راحة'};
+  }
+  if(dayKey==='sat'){
+    var total=SAT_CHECKLIST.length, done=0;
+    if(dd&&dd.checklist){ SAT_CHECKLIST.forEach(function(id){ if(dd.checklist[id]) done++; }); }
+    if(done===0) return {state:'todo',text:'لم يبدأ'};
+    if(done===total) return {state:'done',text:'مكتمل'};
+    return {state:'progress',text:'جاري '+done+'/'+total};
+  }
+  if(dayKey==='wed'){
+    var total2=WED_CHECKLIST.length, done2=0;
+    if(dd&&dd.checklist){ WED_CHECKLIST.forEach(function(id){ if(dd.checklist[id]) done2++; }); }
+    if(done2===0) return {state:'todo',text:'لم يبدأ'};
+    if(done2===total2) return {state:'done',text:'مكتمل'};
+    return {state:'progress',text:'جاري '+done2+'/'+total2};
+  }
+  if(dayKey==='mon'){
+    var checked = dd&&dd.checklist&&dd.checklist['long_run'];
+    return checked?{state:'done',text:'مكتمل'}:{state:'todo',text:'لم يبدأ'};
+  }
+  var st = dd&&dd.fields&&dd.fields.status;
+  if(st==='completed') return {state:'done',text:'مكتمل'};
+  if(st==='not_completed') return {state:'skip',text:'لم يُنجز'};
+  return {state:'todo',text:'لم يُسجّل'};
+}
+function chipClass(state){
+  return {todo:'chip-todo',progress:'chip-progress',done:'chip-done',skip:'chip-skip',rest:'chip-rest'}[state]||'chip-todo';
+}
+
+function weeklyStats(weekKey){
+  var trainable=['sat','sun','mon','tue','wed','thu'];
+  var completed=0;
+  trainable.forEach(function(k){ if(dayStatus(weekKey,k).state==='done') completed++; });
+  return {completed:completed, incomplete:6-completed, pct:Math.round(completed/6*100)};
+}
+function weekRunningDistanceKm(weekKey){
+  var dd=store.weeks[weekKey]||{}; var total=0; var parts=[];
+  var satDist = dd.sat&&dd.sat.fields&&dd.sat.fields.distance;
+  var monDist = dd.mon&&dd.mon.fields&&dd.mon.fields.distance;
+  var wedDone = dd.wed&&dd.wed.checklist&&dd.wed.checklist['running_easy'];
+  if(satDist){ var n1=parseNumber(satDist); if(!isNaN(n1)){ total+=n1; parts.push('السبت: '+n1+' كم'); } }
+  if(monDist){ var n2=parseNumber(monDist); if(!isNaN(n2)){ total+=n2; parts.push('الاثنين: '+n2+' كم'); } }
+  if(wedDone){ total+=5; parts.push('الأربعاء: 5 كم (ثابتة حسب البرنامج)'); }
+  return {total:total, parts:parts};
+}
+function weekAvgRPE(weekKey){
+  var dd=store.weeks[weekKey]||{}; var vals=[];
+  ['sat','sun','mon','tue','wed','thu'].forEach(function(k){
+    var f=dd[k]&&dd[k].fields;
+    if(f&&f.rpe!==undefined&&f.rpe!==''&&f.rpe!==null){ var n=parseFloat(f.rpe); if(!isNaN(n)) vals.push(n); }
+  });
+  if(!vals.length) return null;
+  return (vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1);
+}
+function bestAllTime5K(){
+  var best=null;
+  Object.keys(store.weeks).forEach(function(wk){
+    var f=store.weeks[wk].wed&&store.weeks[wk].wed.fields;
+    if(f&&f.fiveKTime){ var s=parseTimeToSeconds(f.fiveKTime); if(!isNaN(s)&&(best===null||s<best)) best=s; }
+  });
+  return best===null?null:secondsToClock(best);
+}
+
+/* ===================== App state ===================== */
+var state = { view:'home', currentWeekStart:getWeekStart(new Date()), activeDay:null };
+
+function isCurrentRealWeek(){ return toISODate(state.currentWeekStart)===toISODate(getWeekStart(new Date())); }
+function currentWeekKey(){ return toISODate(state.currentWeekStart); }
+
+/* ===================== Render: shell ===================== */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+function topbarHTML(){
+  return '<div class="topbar"><div class="topbar-inner">'+
+    '<div class="brand"><div class="brand-mark">TD</div><div class="brand-text"><b>Training Dashboard</b><span>Hybrid Athlete • HYROX • Spartan • OCR</span></div></div>'+
+    '<div class="tabs">'+
+      '<button class="tab'+(state.view==='home'?' active':'')+'" data-action="nav" data-view="home">الرئيسية</button>'+
+      '<button class="tab'+(state.view==='progress'?' active':'')+'" data-action="nav" data-view="progress">التقدم</button>'+
+      '<button class="tab'+(state.view==='summary'?' active':'')+'" data-action="nav" data-view="summary">ملخص الأسبوع</button>'+
+    '</div>'+
+  '</div></div>';
+}
+
+function weekSwitcherHTML(){
+  return '<div class="weeksw">'+
+    '<button class="wk-btn" data-action="wk-prev">‹</button>'+
+    '<div class="wk-label">'+weekRangeLabel(state.currentWeekStart)+'</div>'+
+    '<button class="wk-btn" data-action="wk-next">›</button>'+
+    (isCurrentRealWeek()?'':'<button class="wk-today" data-action="wk-today">العودة لهذا الأسبوع</button>')+
+  '</div>'+
+  (isCurrentRealWeek()?'':'<div class="wk-flag">أنت تستعرض أسبوعًا آخر غير الأسبوع الحالي</div>');
+}
+
+/* ===================== Render: home ===================== */
+function homeHTML(){
+  var html = '<div class="wrap">';
+  html += weekSwitcherHTML();
+
+  if(isCurrentRealWeek()){
+    var tKey=todayDayKey(), prog=PROGRAM[tKey], st=dayStatus(currentWeekKey(),tKey);
+    html += '<div class="eyebrow">Today\'s Training</div>';
+    html += '<div class="hero'+(prog.category==='rest'?' is-rest':'')+'">';
+    html += '<div class="hero-day">'+prog.abbr+' • '+prog.nameAr+'</div>';
+    html += '<div class="hero-title">'+esc(prog.title)+'</div>';
+    html += '<div class="hero-goal">'+esc(prog.mainGoal)+'</div>';
+    html += '<div class="hero-meta"><span class="chip '+chipClass(st.state)+'">'+st.text+'</span>'+
+      (prog.estimatedDuration?'<span class="chip chip-gold">⏱ '+esc(prog.estimatedDuration)+'</span>':'<span class="chip chip-todo">⏱ المدة غير محددة في البرنامج</span>')+
+      '</div>';
+    html += '<button class="hero-btn" data-action="open-day" data-day="'+tKey+'">عرض تفاصيل التمرين ←</button>';
+    html += '</div>';
+  }
+
+  html += '<div class="eyebrow" style="margin-top:2rem">Weekly Overview</div>';
+  html += '<div class="wgrid">';
+  DAY_ORDER.forEach(function(k){
+    var prog=PROGRAM[k], st=dayStatus(currentWeekKey(),k);
+    var isToday = isCurrentRealWeek() && k===todayDayKey();
+    html += '<div class="dcard'+(k==='fri'?' rest':'')+(isToday?' today':'')+'" data-action="open-day" data-day="'+k+'">'+
+      '<div class="dcard-abbr">'+prog.abbr+' • '+prog.nameAr+'</div>'+
+      '<div class="dcard-title">'+esc(prog.title)+'</div>'+
+      '<span class="chip '+chipClass(st.state)+'">'+st.text+'</span>'+
+    '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+/* ===================== Render: day detail ===================== */
+function fieldHTML(dayKey,f,dd){
+  var val = (dd&&dd.fields&&dd.fields[f.id]!==undefined) ? dd.fields[f.id] : '';
+  var cls = f.type==='textarea' ? 'field full' : 'field';
+  var input;
+  if(f.type==='textarea'){
+    input = '<textarea data-field="'+f.id+'" data-day="'+dayKey+'" placeholder="'+(f.ph?esc(f.ph):'')+'">'+esc(val)+'</textarea>';
+  }else if(f.type==='number'){
+    input = '<input type="number" min="'+(f.min||'')+'" max="'+(f.max||'')+'" data-field="'+f.id+'" data-day="'+dayKey+'" value="'+esc(val)+'" placeholder="'+(f.ph?esc(f.ph):'')+'">';
+  }else{
+    input = '<input type="text" data-field="'+f.id+'" data-day="'+dayKey+'" value="'+esc(val)+'" placeholder="'+(f.ph?esc(f.ph):'')+'">';
+  }
+  return '<div class="'+cls+'"><label>'+esc(f.label)+'</label>'+input+'</div>';
+}
+
+function dayHTML(dayKey){
+  var prog = PROGRAM[dayKey];
+  var wk = currentWeekKey();
+  var dd = safeGetDay(wk,dayKey);
+  var html = '<div class="wrap">';
+  html += weekSwitcherHTML();
+  html += '<div class="eyebrow">'+prog.abbr+' • '+prog.nameAr+'</div>';
+  html += '<h1 class="page-title">'+esc(prog.title)+'</h1>';
+  html += '<div class="page-sub">'+esc(prog.mainGoal)+'</div>';
+
+  html += '<div class="overview-grid">'+
+    '<div class="ov-tile"><div class="k">Day</div><div class="v">'+prog.abbr+' — '+prog.nameAr+'</div></div>'+
+    '<div class="ov-tile"><div class="k">Workout Type</div><div class="v">'+esc(prog.title)+'</div></div>'+
+    '<div class="ov-tile"><div class="k">Main Goal</div><div class="v">'+esc(prog.mainGoal)+'</div></div>'+
+    '<div class="ov-tile"><div class="k">Estimated Duration</div><div class="v">'+(prog.estimatedDuration?esc(prog.estimatedDuration):'غير محدد في البرنامج')+'</div></div>'+
+  '</div>';
+
+  /* Planned blocks + checklist */
+  if(dayKey==='sat'){
+    html += '<div class="card"><h3>Planned — Running</h3>';
+    html += '<ul class="plan-list">';
+    prog.blocks[0].items.forEach(function(it){ html+='<li><span class="plan-dot"></span>'+esc(it)+'</li>'; });
+    html += '</ul></div>';
+
+    html += '<div class="card"><h3>Exercise Checklist</h3><div class="hint">علّم كل بند بعد إنجازه</div><ul class="checklist">';
+    var runChecked = dd&&dd.checklist&&dd.checklist['running'];
+    html += '<li class="'+(runChecked?'checked':'')+'"><input type="checkbox" id="ex-running" data-toggle-day="sat" data-toggle-ex="running" '+(runChecked?'checked':'')+'><label for="ex-running">Running — Speed + Technique</label></li>';
+    prog.ocr.exercises.forEach(function(ex,i){
+      var checked = dd&&dd.checklist&&dd.checklist[ex.id];
+      html += '<li class="'+(checked?'checked':'')+'"><span class="num">'+(i+1)+'</span><input type="checkbox" id="ex-'+ex.id+'" data-toggle-day="sat" data-toggle-ex="'+ex.id+'" '+(checked?'checked':'')+'><label for="ex-'+ex.id+'">'+esc(ex.name)+' — <span style="color:var(--text-faint)">'+esc(ex.target)+'</span></label></li>';
+    });
+    html += '</ul></div>';
+
+    html += '<div class="card"><h3>OCR Tracking</h3><div class="hint">'+esc(prog.ocr.note)+'</div>';
+    html += '<div class="table-wrap"><table><thead><tr><th>Exercise</th><th>Target</th><th>Completed</th><th>Actual</th></tr></thead><tbody>';
+    prog.ocr.exercises.forEach(function(ex){
+      var checked = dd&&dd.checklist&&dd.checklist[ex.id];
+      var actual = (dd&&dd.ocrActual&&dd.ocrActual[ex.id]) || '';
+      html += '<tr class="'+(checked?'checked':'')+'">'+
+        '<td class="ex-name">'+esc(ex.name)+'</td>'+
+        '<td>'+esc(ex.target)+'</td>'+
+        '<td><input type="checkbox" data-toggle-day="sat" data-toggle-ex="'+ex.id+'" '+(checked?'checked':'')+'></td>'+
+        '<td><input type="text" placeholder="reps / hold" data-ocr-actual="'+ex.id+'" data-day="sat" value="'+esc(actual)+'"></td>'+
+      '</tr>';
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="struct-row">'+
+      '<span class="struct-pill">Rounds: '+prog.ocr.structure.rounds+'</span>'+
+      '<span class="struct-pill">Rest between exercises: '+prog.ocr.structure.restBetweenExercises+'</span>'+
+      '<span class="struct-pill">Rest between rounds: '+prog.ocr.structure.restBetweenRounds+'</span>'+
+    '</div></div>';
+  }
+
+  if(dayKey==='wed'){
+    html += '<div class="card"><h3>Planned — Running</h3><ul class="plan-list">';
+    prog.blocks[0].items.forEach(function(it){ html+='<li><span class="plan-dot"></span>'+esc(it)+'</li>'; });
+    html += '</ul></div>';
+    html += '<div class="card"><h3>Planned — Core</h3><ul class="plan-list">';
+    prog.blocks[1].items.forEach(function(it){ html+='<li><span class="plan-dot"></span>'+esc(it)+'</li>'; });
+    html += '</ul></div>';
+    html += '<div class="card"><h3>Exercise Checklist</h3><ul class="checklist">';
+    var wRun = dd&&dd.checklist&&dd.checklist['running_easy'];
+    var wCore = dd&&dd.checklist&&dd.checklist['core'];
+    html += '<li class="'+(wRun?'checked':'')+'"><input type="checkbox" id="ex-running_easy" data-toggle-day="wed" data-toggle-ex="running_easy" '+(wRun?'checked':'')+'><label for="ex-running_easy">Running — Easy 5K</label></li>';
+    html += '<li class="'+(wCore?'checked':'')+'"><input type="checkbox" id="ex-core" data-toggle-day="wed" data-toggle-ex="core" '+(wCore?'checked':'')+'><label for="ex-core">Core workout</label></li>';
+    html += '</ul></div>';
+  }
+
+  if(dayKey==='mon'){
+    html += '<div class="card"><h3>Planned</h3><ul class="plan-list"><li><span class="plan-dot"></span>ركضة طويلة (Long Run)</li></ul></div>';
+    html += '<div class="card"><h3>Exercise Checklist</h3><ul class="checklist">';
+    var mChecked = dd&&dd.checklist&&dd.checklist['long_run'];
+    html += '<li class="'+(mChecked?'checked':'')+'"><input type="checkbox" id="ex-long_run" data-toggle-day="mon" data-toggle-ex="long_run" '+(mChecked?'checked':'')+'><label for="ex-long_run">Long Run</label></li>';
+    html += '</ul></div>';
+  }
+
+  if(dayKey==='sun'||dayKey==='tue'||dayKey==='thu'){
+    html += '<div class="card"><h3>Session</h3><div class="session-name">'+esc(prog.sessionName)+'</div>';
+    html += '<div class="hint">لا توجد تفاصيل إضافية (تمارين/مدة) مذكورة لهذه الحصة في البرنامج — سجّل أداءك الفعلي أدناه.</div>';
+    var stv = dd&&dd.fields&&dd.fields.status;
+    html += '<div class="seg">'+
+      '<button class="seg-btn'+(stv==='completed'?' on-done':'')+'" data-action="set-status" data-day="'+dayKey+'" data-val="completed">✓ Completed</button>'+
+      '<button class="seg-btn'+(stv==='not_completed'?' on-skip':'')+'" data-action="set-status" data-day="'+dayKey+'" data-val="not_completed">✕ Not Completed</button>'+
+    '</div></div>';
+  }
+
+  if(dayKey==='fri'){
+    html += '<div class="card"><h3>Rest Day</h3><div class="hint">يوم راحة كاملة — لا يوجد تمرين مجدول اليوم.</div></div>';
+  }
+
+  /* Tracking form */
+  if(TRACKING[dayKey]){
+    html += '<div class="card"><h3>'+(dayKey==='fri'?'Recovery Tracking':'Tracking — الأداء الفعلي')+'</h3><div class="form-grid">';
+    TRACKING[dayKey].forEach(function(f){ html += fieldHTML(dayKey,f,dd); });
+    html += '</div></div>';
+  }
+
+  html += '<button class="back-btn" data-action="nav" data-view="home">→ العودة للرئيسية</button>';
+  html += '</div>';
+  return html;
+}
+
+/* ===================== Render: progress ===================== */
+function progressHTML(){
+  var weeks = allWeekKeysSorted();
+  var html = '<div class="wrap">';
+  html += '<div class="eyebrow">Progress Tracking</div><h1 class="page-title">التقدم عبر الوقت</h1><div class="page-sub">بيانات مبنية فقط على ما سجّلته أنت أسبوعًا بعد أسبوع.</div>';
+
+  if(!weeks.length){
+    html += '<div class="card"><div class="empty">لا توجد بيانات مسجّلة بعد. ابدأ بتسجيل أدائك من صفحة أي يوم.</div></div></div>';
+    return html;
+  }
+
+  /* Running */
+  html += '<div class="subhead"><span class="dot"></span>Running</div>';
+  html += '<div class="card"><h3>Long Run History</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>Distance</th><th>Time</th><th>Pace</th><th>RPE</th></tr></thead><tbody>';
+  var anyMon=false;
+  weeks.forEach(function(wk){
+    var f = store.weeks[wk].mon && store.weeks[wk].mon.fields;
+    if(f && (f.distance||f.time||f.pace||f.rpe)){
+      anyMon=true;
+      html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+esc(f.distance||'-')+'</td><td>'+esc(f.time||'-')+'</td><td>'+esc(f.pace||'-')+'</td><td>'+esc(f.rpe||'-')+'</td></tr>';
+    }
+  });
+  html += '</tbody></table></div>'+(anyMon?'':'<div class="empty">لا توجد بيانات Long Run مسجّلة بعد</div>')+'</div>';
+
+  html += '<div class="card"><h3>Easy 5K History</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>5K Time</th><th>Pace</th><th>RPE</th></tr></thead><tbody>';
+  var anyWed=false;
+  weeks.forEach(function(wk){
+    var f = store.weeks[wk].wed && store.weeks[wk].wed.fields;
+    if(f && (f.fiveKTime||f.pace||f.rpe)){
+      anyWed=true;
+      html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+esc(f.fiveKTime||'-')+'</td><td>'+esc(f.pace||'-')+'</td><td>'+esc(f.rpe||'-')+'</td></tr>';
+    }
+  });
+  html += '</tbody></table></div>'+(anyWed?'':'<div class="empty">لا توجد بيانات 5K مسجّلة بعد</div>')+'</div>';
+
+  /* OCR */
+  html += '<div class="subhead"><span class="dot" style="background:var(--accent)"></span>OCR</div>';
+  html += '<div class="card"><h3>OCR Exercise Log</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>Exercise</th><th>Target</th><th>Completed</th><th>Actual (Reps/Hold)</th></tr></thead><tbody>';
+  var anyOcr=false;
+  weeks.forEach(function(wk){
+    var sat = store.weeks[wk].sat;
+    if(!sat) return;
+    PROGRAM.sat.ocr.exercises.forEach(function(ex){
+      var checked = sat.checklist && sat.checklist[ex.id];
+      var actual = sat.ocrActual && sat.ocrActual[ex.id];
+      if(checked || actual){
+        anyOcr=true;
+        html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+esc(ex.name)+'</td><td>'+esc(ex.target)+'</td><td>'+(checked?'✓':'—')+'</td><td>'+esc(actual||'-')+'</td></tr>';
+      }
+    });
+  });
+  html += '</tbody></table></div>'+(anyOcr?'':'<div class="empty">لا توجد بيانات OCR مسجّلة بعد</div>')+'</div>';
+
+  html += '<div class="card"><h3>OCR Rounds Completed</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>Rounds Completed</th></tr></thead><tbody>';
+  var anyRounds=false;
+  weeks.forEach(function(wk){
+    var f = store.weeks[wk].sat && store.weeks[wk].sat.fields;
+    if(f && f.roundsCompleted){ anyRounds=true; html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+esc(f.roundsCompleted)+'</td></tr>'; }
+  });
+  html += '</tbody></table></div>'+(anyRounds?'':'<div class="empty">لا توجد بيانات بعد</div>')+'</div>';
+
+  /* Spartan */
+  html += '<div class="subhead"><span class="dot" style="background:var(--violet)"></span>Spartan</div>';
+  [['sun','Spartan Royal'],['tue','Spartan Cardio'],['thu','Spartan HIIT']].forEach(function(pair){
+    var dk=pair[0], label=pair[1];
+    var hasDuration = !!(TRACKING[dk].filter(function(f){return f.id==='duration';}).length);
+    html += '<div class="card"><h3>'+label+'</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>Completed</th>'+(hasDuration?'<th>Duration</th>':'')+'<th>RPE</th><th>Notes</th></tr></thead><tbody>';
+    var any=false;
+    weeks.forEach(function(wk){
+      var f = store.weeks[wk][dk] && store.weeks[wk][dk].fields;
+      if(f && (f.status||f.rpe||f.notes||f.duration)){
+        any=true;
+        html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+(f.status==='completed'?'✓':(f.status==='not_completed'?'✕':'-'))+'</td>'+(hasDuration?'<td>'+esc(f.duration||'-')+'</td>':'')+'<td>'+esc(f.rpe||'-')+'</td><td>'+esc((f.notes||'-').slice(0,60))+'</td></tr>';
+      }
+    });
+    html += '</tbody></table></div>'+(any?'':'<div class="empty">لا توجد بيانات مسجّلة بعد</div>')+'</div>';
+  });
+
+  /* General */
+  html += '<div class="subhead"><span class="dot" style="background:var(--gold)"></span>General</div>';
+  html += '<div class="card"><h3>Weekly Completion</h3><div class="table-wrap"><table><thead><tr><th>Week</th><th>Completion %</th><th>Sessions Completed</th><th>Rest Day Logged</th></tr></thead><tbody>';
+  weeks.forEach(function(wk){
+    var s=weeklyStats(wk);
+    var friData = store.weeks[wk].fri && store.weeks[wk].fri.fields;
+    var restLogged = friData && (friData.recovery||friData.sleep||friData.notes);
+    html += '<tr><td>'+weekRangeLabel(new Date(wk))+'</td><td>'+s.pct+'%</td><td>'+s.completed+'/6</td><td>'+(restLogged?'نعم':'لا')+'</td></tr>';
+  });
+  html += '</tbody></table></div></div>';
+
+  html += '</div>';
+  return html;
+}
+
+/* ===================== Render: summary ===================== */
+function summaryHTML(){
+  var wk = currentWeekKey();
+  var s = weeklyStats(wk);
+  var run = weekRunningDistanceKm(wk);
+  var avgRpe = weekAvgRPE(wk);
+  var best5k = bestAllTime5K();
+  var monF = store.weeks[wk] && store.weeks[wk].mon && store.weeks[wk].mon.fields;
+
+  var html = '<div class="wrap">';
+  html += weekSwitcherHTML();
+  html += '<div class="eyebrow">Weekly Summary</div><h1 class="page-title">ملخص الأسبوع</h1><div class="page-sub">'+weekRangeLabel(state.currentWeekStart)+'</div>';
+
+  html += '<div class="stat-grid">'+
+    '<div class="stat-tile"><div class="v">'+s.completed+'/6</div><div class="l">حصص مكتملة</div></div>'+
+    '<div class="stat-tile"><div class="v">'+s.incomplete+'/6</div><div class="l">حصص غير مكتملة</div></div>'+
+    '<div class="stat-tile"><div class="v">'+s.pct+'%</div><div class="l">نسبة الالتزام الأسبوعية<div class="bar"><div class="bar-fill" style="width:'+s.pct+'%"></div></div></div></div>'+
+    '<div class="stat-tile"><div class="v">'+(run.total?run.total.toFixed(1):'-')+' كم</div><div class="l">إجمالي Running Distance المُدخل</div></div>'+
+    '<div class="stat-tile"><div class="v">'+(best5k||'-')+'</div><div class="l">أفضل 5K مسجل (كل الأوقات)</div></div>'+
+    '<div class="stat-tile"><div class="v">'+((monF&&monF.distance)?esc(monF.distance):'-')+'</div><div class="l">Long Run Distance (هذا الأسبوع)</div></div>'+
+    '<div class="stat-tile"><div class="v">'+(avgRpe||'-')+'</div><div class="l">متوسط RPE (هذا الأسبوع)</div></div>'+
+  '</div>';
+
+  if(run.parts.length){
+    html += '<div class="card"><h3>تفاصيل Running Distance لهذا الأسبوع</h3><ul class="plan-list">';
+    run.parts.forEach(function(p){ html+='<li><span class="plan-dot"></span>'+esc(p)+'</li>'; });
+    html += '</ul></div>';
+  }
+
+  html += '<div class="card"><h3>حالة أيام الأسبوع</h3><div class="table-wrap"><table><thead><tr><th>Day</th><th>Workout</th><th>Status</th></tr></thead><tbody>';
+  DAY_ORDER.forEach(function(k){
+    var prog=PROGRAM[k], st=dayStatus(wk,k);
+    html += '<tr><td>'+prog.abbr+'</td><td>'+esc(prog.title)+'</td><td><span class="chip '+chipClass(st.state)+'">'+st.text+'</span></td></tr>';
+  });
+  html += '</tbody></table></div></div>';
+
+  html += '</div>';
+  return html;
+}
+
+/* ===================== Master render ===================== */
+function render(){
+  var app=document.getElementById('app');
+  var html = topbarHTML();
+  if(state.view==='home') html+=homeHTML();
+  else if(state.view==='day') html+=dayHTML(state.activeDay);
+  else if(state.view==='progress') html+=progressHTML();
+  else if(state.view==='summary') html+=summaryHTML();
+  app.innerHTML = html;
+  window.scrollTo(0,0);
+}
+
+/* ===================== Events ===================== */
+document.addEventListener('click', function(e){
+  var t = e.target.closest('[data-action]');
+  if(!t) return;
+  var action = t.getAttribute('data-action');
+  if(action==='nav'){ state.view=t.getAttribute('data-view'); render(); }
+  else if(action==='open-day'){ state.view='day'; state.activeDay=t.getAttribute('data-day'); render(); }
+  else if(action==='wk-prev'){ state.currentWeekStart=addDays(state.currentWeekStart,-7); render(); }
+  else if(action==='wk-next'){ state.currentWeekStart=addDays(state.currentWeekStart,7); render(); }
+  else if(action==='wk-today'){ state.currentWeekStart=getWeekStart(new Date()); render(); }
+  else if(action==='set-status'){ setStatus(currentWeekKey(), t.getAttribute('data-day'), t.getAttribute('data-val')); render(); }
+});
+
+document.addEventListener('change', function(e){
+  var el = e.target;
+  if(el.matches('[data-toggle-ex]')){
+    toggleChecklist(currentWeekKey(), el.getAttribute('data-toggle-day'), el.getAttribute('data-toggle-ex'));
+    render();
+  }
+});
+
+document.addEventListener('input', function(e){
+  var el = e.target;
+  if(el.matches('[data-field]')){
+    setField(currentWeekKey(), el.getAttribute('data-day'), el.getAttribute('data-field'), el.value);
+  } else if(el.matches('[data-ocr-actual]')){
+    setOcrActual(currentWeekKey(), el.getAttribute('data-day'), el.getAttribute('data-ocr-actual'), el.value);
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
